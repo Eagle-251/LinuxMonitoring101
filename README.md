@@ -1,3 +1,5 @@
+# WIP
+
 # Monitoring Linux Systems
 
 This is a collection of tools and snippets in relation to monitoring a running linux system. This is mainly focused on monitoring headless systems, but could still apply to systems running a desktop environment.
@@ -106,6 +108,8 @@ System statistics on a Linux system could refer to a number of things. It could 
 
 ## Logs
 
-Logging in most major Linux distributions is handled
+Logging in most major Linux distributions is usually handled by journald, with some important exceptions for example apt/apt-get on Debian/Ubuntu does not log to systemd but it uses syslog.
+
+The main difference being that journald logs to binary files that can be only read with the utility `journalctl` whereas syslog logs to [RFC5424](https://tools.ietf.org/html/rfc5424) compliant log files.
 
 ## User Management
