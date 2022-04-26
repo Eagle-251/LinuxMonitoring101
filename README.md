@@ -87,9 +87,10 @@ System statistics on a Linux system could refer to a number of things. It could 
 
   Examples:
 
-  - `ps aux | grep <program name>` is a useful way to get information about a running process
-  - `ps aux | grep $USER` returns all the process owned be a specific user
-  - `ps -f -U $USER` does the same as above but without the pipe or grep
+  - This is a useful way to get information about a running process: <br> `ps aux | grep <program name>`
+  - Return all the process owned be a specific user: <br> `ps aux | grep $USER`
+  - This does the same as above but without the pipe or grep: <br> `ps -f -U $USER`
+  - Sort processes by memory use: <br> `ps aux --sort size`
 
 - ### `top`
 
@@ -106,10 +107,95 @@ System statistics on a Linux system could refer to a number of things. It could 
 
 ## Network
 
+There are many linux utilities to monitor networks and network traffic.
+They range from simple utilities that return the static state and/or configuration
+of network interfaces to complex network monitoring tools.
+
+- ### `ping`
+
+  Ping is a simple but extremely useful tool for monitoring the network connectivity and latency of network of a linux system. It send `ICMP ECHO_REQUEST` packets to a specific host and waits for the reply. The time between the sending and receiving of the packet is returned to the user in ms. This value can be a useful proxy for the latency of a network.
+
+  Examples:
+
+  - Send pings to google.com every second until the user exits the program:<br>`ping google.com`
+
+  - Send 4 pings to google.com then exit: <br> `ping -c 4 google.com`
+
+  - Send 4 pings with an interval of 3 seconds between pings:<br> `ping -i 3 -c 4 google.com`
+
+  - Ping google.com using a specific interface (useful to diagnosing the latency of vpn): <br> `ping -I <interface_name> google.com`
+
+- ### `ip`
+
+  `ip` is a utility to show and set routes, create and bring up/down network interfaces, devices and tunnels.
+  The command has many "objects" that fulfill different functions:
+
+  | Object                 | Use                                                 |
+  | ---------------------- | --------------------------------------------------- |
+  | address                | protocol (IP or IPv6) address on a device.          |
+  | addrlabel              | label configuration for protocol address selection. |
+  | l2tp                   | tunnel ethernet over IP (L2TPv3).                   |
+  | link                   | network device.                                     |
+  | maddress               | multicast address.                                  |
+  | monitor                | watch for netlink messages.                         |
+  | mptcp                  | manage MPTCP path manager.                          |
+  | mroute                 | multicast routing cache entry.                      |
+  | mrule                  | rule in multicast routing policy database.          |
+  | neighbour              | manage ARP or NDISC cache entries.                  |
+  | netns                  | manage network namespaces.                          |
+  | ntable                 | manage the neighbor cache's operation.              |
+  | route                  | routing table entry.                                |
+  | rule                   | rule in routing policy database.                    |
+  | tcp_metrics/tcpmetrics | manage TCP Metrics                                  |
+  | token                  | manage tokenized interface identifiers.             |
+
+  The most common of these however are address, route and link object. Most of the objects will return their configuration with no arguments and will allow you to `set` a config depending on the object called.
+
+  Examples:
+
+  - Return address information if all network interfaces on the system: <br> `ip address`
+
+  - Show link layer information for all network interfaces: <br> `ip link`
+
+  - Output the routing table for the system: <br> `ip route`
+
+  - Add a new network interface: <br> `ip addr add ip/ dev <interface_name>`
+
+  -
+
 ## Logs
 
 Logging in most major Linux distributions is usually handled by journald, with some important exceptions for example apt/apt-get on Debian/Ubuntu does not log to systemd but it uses syslog.
 
 The main difference being that journald logs to binary files that can be only read with the utility `journalctl` whereas syslog logs to [RFC5424](https://tools.ietf.org/html/rfc5424) compliant log files.
+
+### Syslog
+
+Syslog is both a logging daemon and logging messages format. Rsyslog is the daemon that handles log messages and is configured in `/etc/rsyslog.conf` and in drop-in configuration files in the `/etc/rsyslog.d` directory which are added via an "include" in the main conf file.
+Here specific locations for logs from specific daemons or applications are set.
+
+For example:
+
+`auth,authpriv.* /var/log/auth.log`
+
+This line in `/etc/rsyslog.conf` tell syslog to store logs from authentication utilities (eg pam, sudo) to the `auth.log`.
+
+### Journald
+
+Journald is logging component of the [systemd](https://wikiless.org/wiki/Systemd?lang=en) init system. Systemd is utilises plain text `unit` files of various types to manage the state of the system at various stages of the boot process. These stages are known as `targets`. The system moves progressively through each of these targets until it reaches the last target, usually the `user-session` target.
+
+Each systemd unit has it's own log which can be accessed through the `journalctl` binary.
+Unlike syslog, journalctl (when executed with no arguments) can return logs of all the systemd units in one stream. <br>
+You can specify a particular unit file however by using the `-u` flag:
+
+- `journalctl -u avahi-daemon.service`
+
+Including the `-f` will follow log output in real time:
+
+- `journalctl -fu avahi-daemon.service`
+
+Journald also splits up logs by boots. This will show all logs from the current boot:
+
+- `journalctl -b`
 
 ## User Management
