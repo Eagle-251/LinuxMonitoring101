@@ -12,6 +12,8 @@ Areas of concern for monitoring a linux systems could be:
 - [Logs](#logs)
 - [User Management](#user-management)
 
+[Example Monitoring Report on a VPS](report.md)
+
 ## System stats
 
 System statistics on a Linux system could refer to a number of things. It could be hardware statistics, processing resource use, energy use etc. There is a lot of overlap with [Process Monitoring](#process-monitoring) so in order to satisfy [DRY](https://wikiless.org/wiki/Don%27t_repeat_yourself?lang=en) I will focus on tools and methods to query static information about the Linux systems state.
@@ -130,24 +132,24 @@ of network interfaces to complex network monitoring tools.
   `ip` is a utility to show and set routes, create and bring up/down network interfaces, devices and tunnels.
   The command has many "objects" that fulfill different functions:
 
-  | Object                 | Use                                                 |
-  | ---------------------- | --------------------------------------------------- |
-  | address                | protocol (IP or IPv6) address on a device.          |
-  | addrlabel              | label configuration for protocol address selection. |
-  | l2tp                   | tunnel ethernet over IP (L2TPv3).                   |
-  | link                   | network device.                                     |
-  | maddress               | multicast address.                                  |
-  | monitor                | watch for netlink messages.                         |
-  | mptcp                  | manage MPTCP path manager.                          |
-  | mroute                 | multicast routing cache entry.                      |
-  | mrule                  | rule in multicast routing policy database.          |
-  | neighbour              | manage ARP or NDISC cache entries.                  |
-  | netns                  | manage network namespaces.                          |
-  | ntable                 | manage the neighbor cache's operation.              |
-  | route                  | routing table entry.                                |
-  | rule                   | rule in routing policy database.                    |
-  | tcp_metrics/tcpmetrics | manage TCP Metrics                                  |
-  | token                  | manage tokenized interface identifiers.             |
+  | Object                   | Use                                                 |
+  | ------------------------ | --------------------------------------------------- |
+  | `address`                | protocol (IP or IPv6) address on a device.          |
+  | `addrlabel`              | label configuration for protocol address selection. |
+  | `l2tp`                   | tunnel ethernet over IP (L2TPv3).                   |
+  | `link`                   | network device.                                     |
+  | `maddress`               | multicast address.                                  |
+  | `monitor`                | watch for netlink messages.                         |
+  | `mptcp`                  | manage MPTCP path manager.                          |
+  | `mroute`                 | multicast routing cache entry.                      |
+  | `mrule`                  | rule in multicast routing policy database.          |
+  | `neighbour`              | manage ARP or NDISC cache entries.                  |
+  | `netns`                  | manage network namespaces.                          |
+  | `ntable`                 | manage the neighbor cache's operation.              |
+  | `route`                  | routing table entry.                                |
+  | `rule`                   | rule in routing policy database.                    |
+  | `tcp_metrics/tcpmetrics` | manage TCP Metrics                                  |
+  | `token`                  | manage tokenized interface identifiers.             |
 
   The most common of these however are address, route and link object. Most of the objects will return their configuration with no arguments and will allow you to `set` a config depending on the object called.
 
@@ -161,7 +163,51 @@ of network interfaces to complex network monitoring tools.
 
   - Add a new network interface: <br> `ip addr add ip/ dev <interface_name>`
 
-  -
+- ### `netstat`
+
+  Netstat could be seen as the monitoring equivalent to `ip`. It has mostly been succeeded by `ss` and `ip`. It can be very useful when deploying applications as it allows you to check if a port has already been bound by another application.
+
+  Examples:
+
+  - List all ports being used, open or not: <br> `netstat --all`
+
+  - List all open ports: <br> `netstat -l`
+
+  - List all ports being used to transfer TCP Segments: <br> `netstat -t`
+
+  - The same as above but show UDP datagrams: <br> `netstat -u`
+
+  - Use a combination of the above with `grep` to check a specific port (including privileged ports): <br> `sudo netstat -tunlp | grep <port-number>`
+
+- ### `ss`
+
+  todo
+
+- ### `nslookup`
+
+  Query the configured DNS nameserver for a particular record. This command defaults to A records unless specified.
+
+  Examples:
+
+  - Look up the A records of google.com: <br> `nslookup google.com`
+
+  - Specify a DNS server different from the system configured nameserver: <br> `nslookup google.com 1.1.1.1`
+
+  - Lookup the MX (mail exchange) records of google.com: <br> `nslookup -type=MX google.com`
+
+  - Return a reverse DNS lookup (PTR record) for Cloudflare DNS: <br> `nslookup -type=PTR 1.1.1.1`
+
+- ### `dig`
+
+  Dig is very similar to nslookup but is more flexible and can be more useful for troubleshooting DNS record issues.
+
+- ### `whois`
+
+- ### `nmap`
+
+- ### `nc`
+
+- ###
 
 ## Logs
 
